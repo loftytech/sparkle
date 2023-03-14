@@ -10,19 +10,19 @@ Getting started with sparkle is very easy. All you need to do is have `php versi
 
 Then in the root directory of the project, run this command:
 
-```
+```bash
 composer install
 ```
 
 To start the server, in the root directory of the project, run this command:
-```
+```bash
 php star light
 ```
 This would start the php dev server on port 8000 and load the environment variables in the `.env` file if you have one.
 
 
 In production, you can load the environment variables using this command:
-```
+```bash
 php star config
 ```
 
@@ -35,7 +35,7 @@ Sparkle was designed for REST api development but also supports basic view templ
 To create a new web page, go to the `views` directory and create a new file.
 Then in the `routes/web.php`, add a new route like so:
 
-```
+```php
 Route::get('/some-route', function() {
 	View::make("ViewName");
 });
@@ -43,14 +43,14 @@ Route::get('/some-route', function() {
 ```
 
 Inject data into your views by adding an associative array of key value pairs as the second argument like so:
-```
+```php
 Route::get('/some-route', function() {
     View::make("ViewName", ['site_title'=>env('APP_NAME')]);
 });
 ```
 
 use the variable in your view file using double curly brackets like so:
-```
+```html
 <h1>{{ site_title }}</h1>
 ```
 
@@ -59,7 +59,7 @@ use the variable in your view file using double curly brackets like so:
 create a controller by going to the `app/Controllers` directory and creating a new file with a class extending the base controller.
 
 ## Controllers
-```
+```php
 <?php
 namespace App\Controllers;
 
@@ -76,7 +76,7 @@ Now lets create a model for our user controller. You can do this by going to the
 
 now add this snippet:
 
-```
+```php
 <?php
 namespace App\Models;
 
@@ -131,12 +131,12 @@ MYSQL_PASSWORD=
 ```
 
 now that we have our credentials set up, reload the application configuration by running this command:
-```
+```bash
 php star config
 ```
 
 Now let's migrate our UserModel by running this command:
-```
+```bash
 php star migrate
 ```
 
@@ -149,7 +149,7 @@ you can add new columns to your table if you want to or edit existing columns.
 
 In this example, we're going to be working with api.
 To handle requests, we create methods to our controllers and receive data view the `$request` object parameter like so:
-```
+```php
 public function doSomething(Request $request) {
     $req_body = $request->body;
     $req_query = $request->query;
@@ -161,7 +161,7 @@ The request object carries the body, query, params and extras properties added t
 
 Now let's create a method to add users and fetch users. In your UserController, add this snippet:
 
-```
+```php
 <?php
 namespace App\Controllers;
 
@@ -217,7 +217,7 @@ Your controller should look like this:
 
 The above snippets creates a new user by creating a new instance of the UserModel and calling the create method like so:
 
-```
+```php
 $user = new UserModel();
 
 $user->create([
@@ -233,14 +233,14 @@ $user->create([
 >kindly note that the values in the request body are gotten from the request made to this endpoint and you should validate your requests.
 
 Now lets bind an endpoint to this route. In the `routes/api.php`, add this:
-```
+```php
 Route::post('/users/add', [App\Controllers\UserController::class, 'addUser']);
 Route::get('/users/fetch', [App\Controllers\UserController::class, 'getUsers']);
 ```
 
 you can also bind your routes like this:
 
-```
+```php
 use App\Controllers\UserController;
 
 Route::post('/users/get', function($request) {
@@ -254,14 +254,14 @@ Route::post('/users/get', function($request) {
 
 We also fetch all users in the table using this snippet:
 
-```
+```php
 $user = new UserModel();
 $all_users = $user->all();
 ```
 
 
 Other methods for working with models are:
-```
+```php
 Model::insertMany()
 
 $model->findById()
@@ -273,7 +273,7 @@ $model->where('email', "examle@gmail.com")->first()
 
 To update your entries in the table, we do it like this:
 
-```
+```php
 $model = new Model();
 $model->where('email', "examle@gmail.com")->and("first_name", "james")->update("lastname", "felix");
 ```
@@ -282,12 +282,12 @@ This evaluates to `UPDATE model SET lastname=felix WHERE email="example@gmail.co
 
 Request parameters are like variables and can be added to endpoints like so:
 
-```
+```php
 Route::post('/profile/fetch/:id', [App\Controllers\Authentication::class, 'getProfile']);
 ```
 
 Where `:id` is a request parameter and can be accessed via the request object like so:
-```
+```php
 $request->params->id
 ```
 
@@ -297,7 +297,7 @@ Sparkle comes with an Authentication middleware for checking generated tokens ge
 Middlewares are basically methods of classes that intercept the request before getting to where the request is handled:
 
 this is an example:
-```
+```php
 Route::get('/v1/profile', [App\Middlewares\Authentication::class, 'check'], [App\Controllers\AuthController::class, 'getProfile']);
 ```
 
@@ -305,7 +305,7 @@ Route::get('/v1/profile', [App\Middlewares\Authentication::class, 'check'], [App
 
 The default Authentication middleware validates the token set in the header of the incoming request and sets the user_id property to the request like so:
 
-```
+```php
 $request->setExtras(['user_id'=> 45]);
 ```
 
@@ -322,7 +322,7 @@ This is an image of Authentication middleware:
 Sparkle comes with a utility class for sending and listening to api requests.
 Create a request by importing the HttpRequest utility to your controller like so:
 
-```
+```php
 use App\Framework\Utilities\HttpRequest;
 
 class MyController extends Controller {
@@ -340,7 +340,7 @@ class MyController extends Controller {
 
 You can also add headers to your requests by chaining the withHeaders method passing an associative array as an arguments like so:
 
-```
+```php
 use App\Framework\Utilities\HttpRequest;
 
 class MyController extends Controller {
@@ -365,7 +365,7 @@ class MyController extends Controller {
 
 HttpRequest has the following methods for sending requests:
 
-```
+```php
 HttpRequest::patch("api.example.com/post", []);
 HttpRequest::put("api.example.com/post", []);
 HttpRequest::post("api.example.com/post", []);
