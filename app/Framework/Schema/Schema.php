@@ -104,7 +104,7 @@ class Schema {
         $this->current_column_index = $this->current_column_index + 1;
         array_push($this->newColumnList, [
             "Field" => $column,
-            "Type" => "BIGINT($length)",
+            "Type" => "bigint($length)",
             "Null" => "NO",
             "Key" => "PRI",
             "Default" => null,
@@ -182,7 +182,7 @@ class Schema {
             $create_table_query = "CREATE TABLE IF NOT EXISTS ". $this->tableName . " (". $this->schema_sql  . $this->primary_key.") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
             // error_log("\n\n".$create_table_query."\n\n");
             DB::query($create_table_query);
-            echo "\033[32m ".$this->tableName." table migrated successfully \033[0m\n";
+            echo "\033[32m ".$this->tableName." table created successfully \033[0m\n";
         } else {
             if ($this->useTimestamps) {
                 $this->enableTimestamps();

@@ -3,8 +3,6 @@
 use App\Controllers\AuthController as Auth;
 use App\Framework\Utilities\Response;
 
-// use App\Controllers\UserController;
-
 /*
 *	Auth Route
 */
@@ -13,6 +11,16 @@ Route::post('/v1/signup', [App\Controllers\AuthController::class, 'signup']);
 
 Route::get('/v1/profile', [App\Middlewares\Authentication::class, 'check'], [App\Controllers\AuthController::class, 'getProfile']);
 Route::post('/v1/signin', function($request) {
+	Auth::login($request);
+});
+
+
+
+Route::post('/users/add', [App\Controllers\UserController::class, 'addUser']);
+Route::get('/users/fetch', [App\Controllers\UserController::class, 'getUsers']);
+
+
+Route::post('/users/get', function($request) {
 	Auth::login($request);
 });
 

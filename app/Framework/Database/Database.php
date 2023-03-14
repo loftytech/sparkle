@@ -11,6 +11,7 @@ class Database {
 
 	private static function connect() {
 		if(empty(self::$pdoInstance)) {
+
 			self::$host = env("MYSQL_HOST");
 			self::$dbName = env("MYSQL_DB");
 			self::$username = env("MYSQL_USERNAME");

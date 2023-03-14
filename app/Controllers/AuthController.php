@@ -22,6 +22,7 @@ class AuthController extends Controller {
 			if (strlen($lastname) >= 3 && strlen($lastname) < 32) {
 				if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 					$user = new UserModel();
+					$ests = $user->where('email', $email)->get();
 					if (!$user->where('email', $email)->get()) {
 						$user->create([
 							'id'=>null,

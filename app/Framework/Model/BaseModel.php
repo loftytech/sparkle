@@ -62,6 +62,13 @@ class BaseModel {
         }
     }
 
+    public static function all() {
+        $sql_query = "SELECT * FROM ".static::$tableName;
+        $data = DB::query($sql_query, []);
+
+        return $data;
+    }
+
     public static function findOne(array $queries = []) {
         $query_params = [];
         $search = "";
@@ -212,7 +219,13 @@ class BaseModel {
     public function get() {
         $sql_query = "SELECT * FROM  ". static::$tableName . $this->where_sub_query . $this->query_limit . $this->query_offset;
         $data = DB::query($sql_query, $this->query_params);
-        return (object) $data;
+
+        if (count($data) > 0) {
+            return (object) $data;
+        } else {
+            return null;
+        }
+        
     }
 
     public function first() {
