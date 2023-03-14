@@ -280,6 +280,7 @@ $request->params->id
 ```
 
 ## Middlewares
+Middlewares are found in the `app/Middlewares` directory and you can create your middlewares there.
 Sparkle comes with an Authentication middleware for checking generated tokes generated via the `AuthController`;
 Middlewares are basically methods of classes that intercept the request before getting to where the requst is handeled:
 
@@ -290,7 +291,74 @@ Route::get('/v1/profile', [App\Middlewares\Authentication::class, 'check'], [App
 
 `[App\Middlewares\Authentication::class, 'check']` is the middleware that runs before the method that handles the request
 
-The default Authentication middleware validate the token set in the header of the incoming request and sets the user_id property to the request.
+The default Authentication middleware validate the token set in the header of the incoming request and sets the user_id property to the request like so:
+
+```
+$request->setExtras(['user_id'=> 45]);
+```
+
+>note that middlewares must return the request object for the request to continue to the next handler
+
+This is an imaage Authentication middleware:
+
+![Authentication middleware](https://drive.google.com/uc?export=view&id=1egczTEr-1Z_O4DcPDWThYRldc7WpQ6N8WEbkimmux)
+
+
+## Api request
+
+Sparkle comes with a utility class for sending and listening to api request
+create a request by importing the HttpRequest utility to your controller like so:
+
+```
+use App\Framework\Utilities\HttpRequest;
+
+class MyController extends Controller {
+	public function doSomething($request) {
+		$res = HttpRequest::post("api.example.com/post", [
+			"foo"=>"bar"
+		]);
+
+		$res->status_code; // gets http response code
+		$res->data; // gets the data returned
+	}
+}
+
+```
+
+you can also add headers to your requests by chaining the withHeaders method passing an associative array as the arguemtn like so:
+
+use App\Framework\Utilities\HttpRequest;
+
+class MyController extends Controller {
+	public function doSomething($request) {
+		$headers = [
+            'Content-Type'=> 'application/json',
+            'Accept'=> 'application/json'
+        ];
+
+		$res = HttpRequest::withHeaders($headers)::post("api.example.com/post", [
+			"foo"=>"bar"
+		]);
+
+		$res->status_code; // gets http response code
+		$res->data; // gets the data returned
+	}
+}
+
+```
+
+>do not pass data to get requests
+
+HttpRequest has the following methods for sending requests:
+
+```
+HttpRequest::withHeaders($headers)::patch("api.example.com/post", []);
+HttpRequest::withHeaders($headers)::put("api.example.com/post", []);
+HttpRequest::withHeaders($headers)::post("api.example.com/post", []);
+HttpRequest::withHeaders($headers)::delete("api.example.com/post", []);
+HttpRequest::withHeaders($headers)::get("api.example.com/post");
+
+```
 
 
 ## Author's note
