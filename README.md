@@ -94,7 +94,7 @@ class UserModel extends BaseModel {
 
 your user model should look like this:
 
-![User model](https://drive.google.com/file/d/1K1oVeIN37yKoAflu5zyoCJeqglzdgArw/view?usp=share_link)
+![User model](https://drive.google.com/uc?export=view&id=1K1oVeIN37yKoAflu5zyoCJeqglzdgArw)
 
 Now that we have our model set up, we need to make sure our connection to the database is done.
 let's configure our environment variables by copying all the contents of `.env.example.php` in the root directory into a new file in the root directory `.env`
@@ -196,7 +196,7 @@ class UserController extends Controller {
 
 Your controller should look like this:
 
-![User controller](https://drive.google.com/file/d/1egczTEr-duBKQsUmefgNebMdPYiyqgcn/view?usp=share_link)
+![User controller](https://drive.google.com/uc?export=view&id=1egczTEr-duBKQsUmefgNebMdPYiyqgcn)
 
 The above snippets creates a new user by creating a new instance of the UserModel and calling the create method like so:
 
