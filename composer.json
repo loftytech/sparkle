@@ -1,0 +1,14 @@
+{
+    "name": "dcoder/howfar",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "loftytech",
+            "email": "58659264+loftytech@users.noreply.github.com"
+        }
+    ]
+}

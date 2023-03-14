@@ -1,0 +1,12 @@
+Options -Indexes
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !/css
+RewriteCond %{REQUEST_URI} !/uploads
+RewriteCond %{REQUEST_URI} !/img
+RewriteCond %{REQUEST_URI} !/svg
+RewriteCond %{REQUEST_URI} !/lofty-admin
+RewriteCond %{REQUEST_URI} !/ads.txt
+RewriteCond %{REQUEST_URI} !/favicon.ico
+RewriteCond %{REQUEST_URI} !/icon.png
+RewriteRule ^([^/]+)/? index.php?url=$1 [L,QSA]
