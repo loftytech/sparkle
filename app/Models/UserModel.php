@@ -10,11 +10,10 @@ class UserModel extends BaseModel {
 
     public static function table() {
         $schema = new Schema(self::$tableName);
-        $schema->integer('id')->autoIncrement()->primary();
-        $schema->string('username');
+        $schema->id();
+        $schema->string('firstname');
         $schema->string('password');
         $schema->string('email');
-        $schema->string('firstname');
         $schema->string('lastname');
         $schema->create();
     }

@@ -16,7 +16,7 @@ class Database {
 			self::$username = getenv("MYSQL_USERNAME");
 			self::$password = getenv("MYSQL_PASSWORD");
 
-			self::$pdoInstance = new \PDO('mysql:host='.self::$host.'; dbname='.self::$dbName.'; charset=utf8', self::$username, self::$password, array(\PDO::ATTR_PERSISTENT => true,  \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ));
+			self::$pdoInstance = new \PDO('mysql:host='.self::$host.'; dbname='.self::$dbName.'; charset=utf8', self::$username, self::$password, array(\PDO::ATTR_PERSISTENT => true));
 			self::$pdoInstance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		}
 
@@ -31,7 +31,7 @@ class Database {
 
 		if ($queryType == 'SELECT' || $queryType == 'DESCRIBE') {
 
-			$data = $statement->fetchAll(\PDO::FETCH_OBJ);
+			$data = $statement->fetchAll(\PDO::FETCH_ASSOC);
 			return $data;
 
 		}

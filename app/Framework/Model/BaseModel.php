@@ -48,7 +48,7 @@ class BaseModel {
         $sql_query = "SELECT * FROM ".static::$tableName." ".$search .$query_limit;
         $data = DB::query($sql_query, $query_params);
 
-        return $data;
+        return (object) $data;
     }
 
     public static function findById(int | string $id, string $tableId = "id") {
@@ -56,7 +56,7 @@ class BaseModel {
         $data = DB::query($sql_query, [":row_id"=> (int) $id]);
 
         if (count($data) > 0) {
-            return $data[0];
+            return (object) $data[0];
         } else {
             return null;
         }
@@ -212,7 +212,7 @@ class BaseModel {
     public function get() {
         $sql_query = "SELECT * FROM  ". static::$tableName . $this->where_sub_query . $this->query_limit . $this->query_offset;
         $data = DB::query($sql_query, $this->query_params);
-        return $data;
+        return (object) $data;
     }
 
     public function first() {
@@ -220,7 +220,7 @@ class BaseModel {
         $data = DB::query($sql_query, $this->query_params);
 
         if (count($data) > 0) {
-            return $data[0];
+            return (object) $data[0];
         } else {
             return null;
         }

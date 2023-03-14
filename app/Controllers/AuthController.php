@@ -2,7 +2,6 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
-use App\Framework\Database\Database as DB;
 use App\Framework\Utilities\Response;
 use App\Framework\Utilities\JwtUtility;
 use App\Framework\Utilities\Request;
@@ -114,7 +113,6 @@ class AuthController extends Controller {
 
 		$user = new UserModel();
 		
-
 		Response::send(array(
 			'message'=>'profile fetched successfully',
 			'status'=>1,

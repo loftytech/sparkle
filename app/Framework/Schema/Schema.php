@@ -106,7 +106,7 @@ class Schema {
             "Field" => $column,
             "Type" => "BIGINT($length)",
             "Null" => "NO",
-            "Key" => "",
+            "Key" => "PRI",
             "Default" => null,
             "Extra" => "auto_increment",
         ]);
@@ -179,7 +179,7 @@ class Schema {
             }
 
             // echo "\e[0;35;40m".$this->tableName." doesn't exist \e[0m\n";
-            $create_table_query = "CREATE TABLE IF NOT EXISTS ". $this->tableName . " (". $this->schema_sql  . $this->primary_key.") ENGINE=InnoDB AUTO_INCREMENT DEFAULT CHARSET=utf8mb4;";
+            $create_table_query = "CREATE TABLE IF NOT EXISTS ". $this->tableName . " (". $this->schema_sql  . $this->primary_key.") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
             // error_log("\n\n".$create_table_query."\n\n");
             DB::query($create_table_query);
             echo "\033[32m ".$this->tableName." table migrated successfully \033[0m\n";
@@ -268,16 +268,29 @@ class Schema {
         $query = "DESCRIBE ". $this->tableName;
         $data = DB::query($query);
         $table_columns = count($data);
-        if ($data[$table_columns-2] == "date_created" && $data[$table_columns-1] == "date_updated") {
-            unset($data[$table_columns-1]);
-            unset($data[$table_columns-2]);
+        if($this->useTimestamps) {
+            if ($data[$table_columns-2] == "date_created" && $data[$table_columns-1] == "date_updated") {
+                unset($data[$table_columns-1]);
+                unset($data[$table_columns-2]);
+            }
         }
         $this->savedColumnList = array_values($data);
-
-        // echo print_r($this->savedColumnList);
     }
+    // public function removeTimestampsFromNewColumns () {
+    //     $query = "DESCRIBE ". $this->tableName;
+    //     $data = DB::query($query);
+    //     $table_columns = count($data);
+    //     if($this->useTimestamps) {
+    //         if ($this->newColumnList[$table_columns-2] == "date_created" && $this->newColumnList[$table_columns-1] == "date_updated") {
+    //             unset($this->newColumnList[$table_columns-1]);
+    //             unset($this->newColumnList[$table_columns-2]);
+    //         }
+    //     }
+    //     $this->newColumnList = array_values($data);
+    // }
 
     public function compareColumns() {
+        // $this->removeTimestampsFromNewColumns();
         if (count($this->newColumnList) == count($this->savedColumnList)) {
             $this->compareAndAlterColumns();
         } else {
@@ -330,6 +343,8 @@ class Schema {
                 
                 if ($new_column?->type == "text") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
+                } else if ($new_column?->type == "datetime") {
+                    $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` DATETIME NOT NULL DEFAULT ". $column["Default"]. "; ";
                 }
         
                 array_push($this->modificationList,
@@ -445,6 +460,8 @@ class Schema {
                 
                 if ($new_column?->type == "text") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
+                } else if ($new_column?->type == "datetime") {
+                    $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` DATETIME NOT NULL DEFAULT ". $column["Default"]. "; ";
                 }
 
                 array_push($this->modificationList,
