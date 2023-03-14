@@ -1,6 +1,6 @@
 <?php
 
-use App\Controllers\Database as DB;
+use App\Framework\Database\Database as DB;
 
 	$menu_items = explode(',', strip_tags(DB::query('SELECT title, content FROM posts WHERE title=:menu_name AND post_type="menu"', array(':menu_name'=>"footer menu"))[0]['content']));
 ?>

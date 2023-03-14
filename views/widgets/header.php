@@ -37,7 +37,7 @@
 	</div>
 
 	<?php if (function_exists('use_custom_slide')) { ?>
-			<?php use_custom_slide($homeURL); ?>
+			<!-- <?php //use_custom_slide($homeURL); ?> -->
 	<?php } else { ?>
 		<div class="slide-wrapper">
 			<div class="slide-content">
