@@ -22,7 +22,7 @@ Sparkle is built to be light weight and relable so it doesn't come with any thir
 
 
 ## Views
-Sparkle was designed to for REST api development but also supports basic views templating.
+Sparkle was designed for REST api development but also supports basic view templating.
 
 To create a new web page, go to the `views` directory and create a new file.
 Then in the `routes/web.php`, add a new route like so:
