@@ -8,20 +8,11 @@ use App\Framework\Utilities\Response;
 */
 
 Route::post('/v1/signup', [App\Controllers\AuthController::class, 'signup']);
-
 Route::get('/v1/profile', [App\Middlewares\Authentication::class, 'check'], [App\Controllers\AuthController::class, 'getProfile']);
 Route::post('/v1/signin', function($request) {
 	Auth::login($request);
 });
 
-
-
-Route::post('/profile/fetch/:id', [App\Controllers\Authentication::class, 'getProfile']);
-
-
-Route::post('/users/get', function($request) {
-	Auth::login($request);
-});
 
 
 /*
