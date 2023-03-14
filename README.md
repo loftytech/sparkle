@@ -222,7 +222,7 @@ $user->create([
 ]);
 ```
 
->kindly note that the values in the request body are gotten from the request made to this endpoint.
+>kindly note that the values in the request body are gotten from the request made to this endpoint and you should validate your requests.
 
 Now lets bind an endpoint to this route. In the `routes/api.php`, add this:
 ```
