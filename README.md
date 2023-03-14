@@ -23,6 +23,7 @@ php star configure
 Sparkle is built to be light weight and relable so it doesn't come with any third party packages but you can extend sparkle by installing third party packages via composer.
 
 
+## Views
 Sparkle was designed to for REST api development but also supports basic views templating.
 
 To create a new web page, go to the `views` directory and create a new file.
@@ -51,7 +52,7 @@ use the variable in your view file using double curly brackets like so:
 
 create a controller by going to the `app/Controllers` directory and creating a new file with a class extending the base controller.
 
-
+## Controllers
 ```
 <?php
 namespace App\Controllers;
@@ -64,7 +65,8 @@ class UserController extends Controller {
 ?>
 ```
 
-now lets create a model for our user controller. You can do this by going to the `app/Models` directory and create a file, let's say `UserModel.php`
+## Models
+Now lets create a model for our user controller. You can do this by going to the `app/Models` directory and create a file, let's say `UserModel.php`
 
 now add this snippet:
 
@@ -101,6 +103,8 @@ your user model should look like this:
 
 ![User model](https://drive.google.com/uc?export=view&id=1K1oVeIN37yKoAflu5zyoCJeqglzdgArw)
 
+## Setting up the database
+
 Now that we have our model set up, we need to make sure our connection to the database is done.
 let's configure our environment variables by copying all the contents of `.env.example.php` in the root directory into a new file in the root directory `.env`
 
@@ -134,6 +138,8 @@ A new table with the name users has been created in the database
 
 you can add new columns to your table if you want to or edit existing columns.
 >after changes to your model, you need to run `php star migrate` for your changes to effect
+
+## Handling requests
 
 In this example, we're going to be working with api.
 To handle requests, we create methods to our controllers and receive data view the `$request` object parameter like so:
