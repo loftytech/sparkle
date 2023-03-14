@@ -149,7 +149,7 @@ public function doSomething(Request $request) {
     $req_extras = $request->extras;
 }
 ```
-The request object has carries the body, query, params and extra added to the request.
+The request object carries the body, query, params and extras properties added to the request.
 
 Now let's create a method to add users and fetch users. In your UserController, add this snippet:
 
@@ -241,7 +241,7 @@ Route::post('/users/get', function($request) {
 });
 
 ```
-> note that we imorted the UserController using this `use App\Controllers\UserController;`.
+> note that we imported the UserController using this `use App\Controllers\UserController;`.
 
 
 We also fetch all users in the table using this snippet:
@@ -272,7 +272,7 @@ $model->where('email', "examle@gmail.com")->and("first_name", "james")->update("
 This evaluates to `UPDATE model SET lastname=felix WHERE email="example@gmail.com AND first_name = "james"`
 
 
-Request parameters are like variables and can be added to end point like so:
+Request parameters are like variables and can be added to endpoints like so:
 
 ```
 Route::post('/profile/fetch/:id', [App\Controllers\Authentication::class, 'getProfile']);
@@ -285,8 +285,8 @@ $request->params->id
 
 ## Middlewares
 Middlewares are found in the `app/Middlewares` directory and you can create your middlewares there.
-Sparkle comes with an Authentication middleware for checking generated tokes generated via the `AuthController`;
-Middlewares are basically methods of classes that intercept the request before getting to where the requst is handeled:
+Sparkle comes with an Authentication middleware for checking generated tokens generated via the `AuthController`;
+Middlewares are basically methods of classes that intercept the request before getting to where the request is handled:
 
 this is an example:
 ```
@@ -295,7 +295,7 @@ Route::get('/v1/profile', [App\Middlewares\Authentication::class, 'check'], [App
 
 `[App\Middlewares\Authentication::class, 'check']` is the middleware that runs before the method that handles the request
 
-The default Authentication middleware validate the token set in the header of the incoming request and sets the user_id property to the request like so:
+The default Authentication middleware validates the token set in the header of the incoming request and sets the user_id property to the request like so:
 
 ```
 $request->setExtras(['user_id'=> 45]);
@@ -303,7 +303,7 @@ $request->setExtras(['user_id'=> 45]);
 
 >note that middlewares must return the request object for the request to continue to the next handler
 
-This is an imaage Authentication middleware:
+This is an image of Authentication middleware:
 
 
 ![Authentication middleware](https://drive.google.com/uc?export=view&id=1Z_O4DcPDWThYRldc7WpQ6N8WEbkimmux)
@@ -311,8 +311,8 @@ This is an imaage Authentication middleware:
 
 ## Api request
 
-Sparkle comes with a utility class for sending and listening to api request
-create a request by importing the HttpRequest utility to your controller like so:
+Sparkle comes with a utility class for sending and listening to api requests.
+Create a request by importing the HttpRequest utility to your controller like so:
 
 ```
 use App\Framework\Utilities\HttpRequest;
@@ -330,7 +330,7 @@ class MyController extends Controller {
 
 ```
 
-you can also add headers to your requests by chaining the withHeaders method passing an associative array as the arguemtn like so:
+You can also add headers to your requests by chaining the withHeaders method passing an associative array as an arguments like so:
 
 ```
 use App\Framework\Utilities\HttpRequest;
