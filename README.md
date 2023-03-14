@@ -2,6 +2,9 @@
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/loftytech)
 
+## Introduction
+
+Sparkel is a free to use open source php MVC framwork for building web applications. It's very simple to work with and has a very low learning curve.
 
 Getting started with sparkle is very easy. All you need to do is have `php version >= 8` installed on you computer. Once you have that done, pull from the main branch of this repository.
 
@@ -90,7 +93,9 @@ class UserModel extends BaseModel {
 
 ?>
 ```
-
+>The name of the table in this model is `users` as defined here `protected static $tableName = 'users'`
+>Note that timestamps `date_created` and `date_updated` are added by default to entries to each table;
+>You do not need to create extra migration files after creating your models just run the migrate command and you're good to go!
 
 your user model should look like this:
 
@@ -221,6 +226,19 @@ Route::post('/users/add', [App\Controllers\UserController::class, 'addUser']);
 Route::get('/users/fetch', [App\Controllers\UserController::class, 'getUsers']);
 ```
 
+you can also bind your routes like this:
+
+```
+use App\Controllers\UserController;
+
+Route::post('/users/get', function($request) {
+	$userController = new UserController();
+	UserController->getUsers($request);
+});
+
+```
+> note that we imorted the UserController using this `use App\Controllers\UserController;`.
+
 
 We also fetch all users in the table using this snippet:
 
@@ -248,3 +266,37 @@ $model = new Model();
 $model->where('email', "examle@gmail.com")->and("first_name", "james")->update("lastname", "felix");
 ```
 This evaluates to `UPDATE model SET lastname=felix WHERE email="example@gmail.com AND first_name = "james"`
+
+
+Request parameters are like variables and can be added to end point like so:
+
+```
+Route::post('/profile/fetch/:id', [App\Controllers\Authentication::class, 'getProfile']);
+```
+
+Where `:id` is a request parameter and can be accessed via the request object like so:
+```
+$request->params->id
+```
+
+## Middlewares
+Sparkle comes with an Authentication middleware for checking generated tokes generated via the `AuthController`;
+Middlewares are basically methods of classes that intercept the request before getting to where the requst is handeled:
+
+this is an example:
+```
+Route::get('/v1/profile', [App\Middlewares\Authentication::class, 'check'], [App\Controllers\AuthController::class, 'getProfile']);
+```
+
+`[App\Middlewares\Authentication::class, 'check']` is the middleware that runs before the method that handles the request
+
+The default Authentication middleware validate the token set in the header of the incoming request and sets the user_id property to the request.
+
+
+## Author's note
+More features are been added to the framework. you can support me by buying me a coffee
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/loftytech)
+
+If you notice any bugs or you have a feature you want us to include, kindly reachout to me on [twitter](https://twitter.com/loftycodes)
+
+thanks!

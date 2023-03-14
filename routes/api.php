@@ -16,8 +16,7 @@ Route::post('/v1/signin', function($request) {
 
 
 
-Route::post('/users/add', [App\Controllers\UserController::class, 'addUser']);
-Route::get('/users/fetch', [App\Controllers\UserController::class, 'getUsers']);
+Route::post('/profile/fetch/:id', [App\Controllers\Authentication::class, 'getProfile']);
 
 
 Route::post('/users/get', function($request) {

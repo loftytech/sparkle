@@ -1,8 +1,6 @@
 <?php
 namespace App\Middlewares;
 
-use App\Controllers\Controller;
-use App\Controllers\LogIn;
 use App\Framework\Utilities\JwtUtility;
 use App\Framework\Utilities\Response;
 use App\Framework\Utilities\Request;
