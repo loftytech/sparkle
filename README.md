@@ -377,6 +377,7 @@ HttpRequest::get("api.example.com/post");
 
 ## Author's note
 More features are been added to the framework. you can support me by buying me a coffee
+
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/loftytech)
 
 If you notice any bugs or you have a feature you want us to include, kindly reachout to me on [twitter](https://twitter.com/loftycodes)
