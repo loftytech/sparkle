@@ -132,7 +132,7 @@ MYSQL_PASSWORD=
 
 now that we have our credentials set up, reload the application configuration by running this command:
 ```
-php star configure
+php star config
 ```
 
 Now let's migrate our UserModel by running this command:
@@ -366,11 +366,11 @@ class MyController extends Controller {
 HttpRequest has the following methods for sending requests:
 
 ```
-HttpRequest::withHeaders($headers)::patch("api.example.com/post", []);
-HttpRequest::withHeaders($headers)::put("api.example.com/post", []);
-HttpRequest::withHeaders($headers)::post("api.example.com/post", []);
-HttpRequest::withHeaders($headers)::delete("api.example.com/post", []);
-HttpRequest::withHeaders($headers)::get("api.example.com/post");
+HttpRequest::patch("api.example.com/post", []);
+HttpRequest::put("api.example.com/post", []);
+HttpRequest::post("api.example.com/post", []);
+HttpRequest::delete("api.example.com/post", []);
+HttpRequest::get("api.example.com/post");
 
 ```
 
