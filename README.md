@@ -307,7 +307,8 @@ $request->setExtras(['user_id'=> 45]);
 
 This is an imaage Authentication middleware:
 
-![Authentication middleware](https://drive.google.com/uc?export=view&id=1egczTEr-1Z_O4DcPDWThYRldc7WpQ6N8WEbkimmux)
+
+![Authentication middleware](https://drive.google.com/uc?export=view&id=1Z_O4DcPDWThYRldc7WpQ6N8WEbkimmux)
 
 
 ## Api request
