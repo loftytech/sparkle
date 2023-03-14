@@ -26,7 +26,7 @@ In production, you can load the environment variables using this command:
 php star config
 ```
 
-Sparkle is built to be light weight and relable so it doesn't come with any third party packages but you can extend sparkle by installing third party packages via composer.
+Sparkle is built to be light weight and reliable so it doesn't come with any third party packages but you can extend sparkle by installing third party packages via composer.
 
 
 ## Views
