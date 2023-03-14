@@ -1,10 +1,8 @@
 # sparkle
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/loftytech)
-
 ## Introduction
 
-Sparkel is a free to use open source php MVC framwork for building web applications. It's very simple to work with and has a very low learning curve.
+Sparkle is a free to use open source php MVC framework for building web applications. It's very simple to work with and has a very low learning curve.
 
 Getting started with sparkle is very easy. All you need to do is have `php version >= 8` installed on you computer. Once you have that done, pull from the main branch of this repository.
 
