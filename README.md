@@ -34,7 +34,7 @@ Route::get('/some-route', function() {
 
 ```
 
-Inject data into your views by added an associative array of key value pairs as the second argument like so:
+Inject data into your views by adding an associative array of key value pairs as the second argument like so:
 ```
 Route::get('/some-route', function() {
     View::make("ViewName", ['site_title'=>env('APP_NAME')]);
