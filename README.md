@@ -334,6 +334,7 @@ class MyController extends Controller {
 
 you can also add headers to your requests by chaining the withHeaders method passing an associative array as the arguemtn like so:
 
+```
 use App\Framework\Utilities\HttpRequest;
 
 class MyController extends Controller {
