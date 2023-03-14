@@ -4,7 +4,15 @@
 
 Sparkle is a free to use open source php MVC framework for building web applications. It's very simple to work with and has a very low learning curve.
 
-Getting started with sparkle is very easy. All you need to do is have `php version >= 8` installed on you computer. Once you have that done, pull from the main branch of this repository.
+Getting started with sparkle is very easy. All you need to do is have `php version >= 8` and `composer` installed on you computer. Once you have that done, pull from the main branch of this repository.
+
+>composer is a package manager for php
+
+Then in the root directory of the project, run this command:
+
+```
+composer install
+```
 
 To start the server, in the root directory of the project, run this command:
 ```
@@ -15,7 +23,7 @@ This would start the php dev server on port 8000 and load the environment variab
 
 In production, you can load the environment variables using this command:
 ```
-php star configure
+php star config
 ```
 
 Sparkle is built to be light weight and relable so it doesn't come with any third party packages but you can extend sparkle by installing third party packages via composer.
