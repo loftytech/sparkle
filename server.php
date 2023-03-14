@@ -15,15 +15,24 @@
         exit(0);
     }
 
-	require __DIR__ . '/vendor/autoload.php';
-
-
     require_once "app/Framework/Helpers/EnvGenerator.php";
-    App\Framework\Helpers\EnvGenerator::load();
+    function env(string $key) {
+        $envData = App\Framework\Helpers\EnvGenerator::initEnv();
+
+        if (getenv($key)) {
+            return $key;
+        } else if (isset($envData[$key])) {
+            return $envData[$key];
+        } else {
+            return null;
+        }
+    }
+
+	require __DIR__ . '/vendor/autoload.php';
 
     putenv("JAMES=felix");
 
 	require_once 'core/Route.php';
-	require_once 'routes/api.php';
 	require_once 'routes/web.php';
+	require_once 'routes/api.php';
 ?>

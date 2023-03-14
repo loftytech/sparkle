@@ -11,10 +11,10 @@ class Database {
 
 	private static function connect() {
 		if(empty(self::$pdoInstance)) {
-			self::$host = getenv("MYSQL_HOST");
-			self::$dbName = getenv("MYSQL_DB");
-			self::$username = getenv("MYSQL_USERNAME");
-			self::$password = getenv("MYSQL_PASSWORD");
+			self::$host = env("MYSQL_HOST");
+			self::$dbName = env("MYSQL_DB");
+			self::$username = env("MYSQL_USERNAME");
+			self::$password = env("MYSQL_PASSWORD");
 
 			self::$pdoInstance = new \PDO('mysql:host='.self::$host.'; dbname='.self::$dbName.'; charset=utf8', self::$username, self::$password, array(\PDO::ATTR_PERSISTENT => true));
 			self::$pdoInstance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -38,10 +38,10 @@ class Database {
 	}
 
 	public static function checkTable($table, $params = array()) {
-		self::$host = getenv("MYSQL_HOST");
-		self::$dbName = getenv("MYSQL_DB");
-		self::$username = getenv("MYSQL_USERNAME");
-		self::$password = getenv("MYSQL_PASSWORD");
+		self::$host = env("MYSQL_HOST");
+		self::$dbName = env("MYSQL_DB");
+		self::$username = env("MYSQL_USERNAME");
+		self::$password = env("MYSQL_PASSWORD");
 
 		$query = "SELECT TABLE_SCHEMA,  TABLE_NAME, TABLE_TYPE FROM information_schema.TABLES WHERE TABLE_SCHEMA LIKE '".self::$dbName."' AND TABLE_TYPE LIKE 'BASE TABLE' AND TABLE_NAME = '".$table."'";
 		$statement = self::connect()->prepare($query);

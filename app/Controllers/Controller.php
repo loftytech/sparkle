@@ -3,20 +3,20 @@ namespace App\Controllers;
 use App\View;
 
 class Controller {
-	public static function CreateView($viewName, $params = null) {
+	public static function createView($viewName, $params = null) {
 		$params = (object) $params;
 
 		$data = [
-			'site_title'=>getenv('APP_NAME'),
+			'site_title'=>env('APP_NAME'),
 		];
-		View::useLayput($viewName, $data);
+		View::useLayout($viewName, $data);
 	}
 
 	public static function useTemplate($viewName, $params = null) {
 		$params = (object) $params;
 
 		$data = [
-			'site_title'=>getenv('APP_NAME'),
+			'site_title'=>env('APP_NAME'),
 		];
 		View::make($viewName, $data);
 	}

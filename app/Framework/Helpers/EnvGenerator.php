@@ -3,26 +3,14 @@
 namespace App\Framework\Helpers;
 
 class EnvGenerator {
-    public function __construct() {
-        if (!function_exists('env')) {
-            function env($key) {
-                $env_array = EnvGenerator::initEnv();
-            
-                if (isset($env_array[$key])) {
-                    return $env_array[$key];
-                } else {
-                    return null;
-                }
-            }
-        }
-    }
 
     public static function initEnv () {
 		$environmentPath = __DIR__ . "/../../../core/Environment.php";
 		if(file_exists($environmentPath)){
-			require_once $environmentPath;
-
-            return $env_array;
+			include $environmentPath;
+        
+            $env_data = $env_array;
+            return $env_data;
 		} else {
             return [];
         }

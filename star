@@ -16,6 +16,12 @@
             App\Framework\Helpers\EnvGenerator::load();
             include "app/Framework/Migrations/Migrator.php";
         }
+        if ($argv[1] == "config") {
+            include "app/Framework/Helpers/EnvGenerator.php";
+            App\Framework\Helpers\EnvGenerator::generate();
+            
+            echo "\033[32m App configurations loaded successfully \033[0m\n";
+        }
     }
     
 ?>

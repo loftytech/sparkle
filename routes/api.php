@@ -1,7 +1,7 @@
 <?php
 
 use App\Controllers\AuthController as Auth;
-use App\Utilities\Response;
+use App\Framework\Utilities\Response;
 
 // use App\Controllers\UserController;
 
