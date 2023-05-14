@@ -23,7 +23,7 @@ This would start the php dev server on port 8000 and load the environment variab
 
 In production, you can load the environment variables using this command:
 ```bash
-php star config
+php star configure
 ```
 
 Sparkle is built to be light weight and reliable so it doesn't come with any third party packages but you can extend sparkle by installing third party packages via composer.
@@ -132,7 +132,7 @@ MYSQL_PASSWORD=
 
 now that we have our credentials set up, reload the application configuration by running this command:
 ```bash
-php star config
+php star configure
 ```
 
 Now let's migrate our UserModel by running this command:

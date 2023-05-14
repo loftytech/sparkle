@@ -7,9 +7,6 @@ use App\Framework\Utilities\Request;
 
 class Authentication {
     public static function check (Request $request) {
-        $req_data = file_get_contents('php://input');
-        $req_data = json_decode($req_data);
-
         if (!isset(apache_request_headers()['Authorization'])) {
             $response = array(
                 'message'=>'Unauthorized user',
@@ -43,7 +40,7 @@ class Authentication {
             return Response::send($response, 401);
         }
 
-    }   
+    }
 }
 
 ?>

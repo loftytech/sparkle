@@ -7,10 +7,10 @@ class Request {
     public object $body;
     public object $extras;
 
-    public function __construct(array $params = [], array $query = [], string $body = "") {
+    public function __construct(array $params = [], array $query = [], array $body = []) {
         $this->params = (object) $params;
         $this->query = (object) $query;
-        $this->body = (object) json_decode($body);
+        $this->body = (object) $body;
     }
 
     public function setExtras(array $data) {
