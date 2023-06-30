@@ -77,6 +77,7 @@ class Schema {
         return $this;
     }
 
+    
     public function integer(string $column, int $length = 11) {
         $this->checkTableExists($column);
         $this->current_column_index = $this->current_column_index + 1;
@@ -95,6 +96,28 @@ class Schema {
         }
     
         $this->schema_sql = $this->schema_sql . $append_comma ." `". $column ."` int(".$length.") NOT NULL";
+        return $this;
+    }
+
+
+    public function double(string $column, int $length = 11) {
+        $this->checkTableExists($column);
+        $this->current_column_index = $this->current_column_index + 1;
+        array_push($this->newColumnList, [
+            "Field" => $column,
+            "Type" => "double",
+            "Null" => "NO",
+            "Key" => "",
+            "Default" => null,
+            "Extra" => "",
+        ]);
+        $this->current_column = $column;
+        $append_comma = "";
+        if (strlen($this->schema_sql) > 1) {
+            $append_comma = ",";
+        }
+    
+        $this->schema_sql = $this->schema_sql . $append_comma ." `". $column ."` double NOT NULL";
         return $this;
     }
 
@@ -149,7 +172,7 @@ class Schema {
         }
     }
 
-    private function enableTimestamps () {
+    private function enableTimestamps() {
         $this->checkTableExists("date_created");
         $this->checkTableExists("date_updated");
         $this->current_column_index = $this->current_column_index + 1;
@@ -199,7 +222,7 @@ class Schema {
                             if ($modification["from"] != $modification["to"]) {
                                 array_push($this->replacedColumnList, $modification["to"]);
                                 $column = $this->getColumnType($checkedColumn->data->Type);
-                                $this->buildAndRunQuery(queryType: "ALTER_CHANGE_COLUMN", from: $modification["to"], to: $modification["to"]."_ALTERED", type: $column->type, limit: $column->limit, extras: $checkedColumn->data->Extra);
+                                $this->buildAndRunQuery(queryType: "ALTER_CHANGE_COLUMN", from: $modification["to"], to: $modification["to"]."_ALTERED", type: $column->type, limit: $column->limit, fromType: $modification["from_type"], toType: $modification["to_type"], extras: $checkedColumn->data->Extra);
                             }
                         }
 
@@ -212,16 +235,17 @@ class Schema {
                             if ($modification["from"] != $modification["to"]) {
                                 array_push($this->replacedColumnList, $modification["to"]);
                                 $column = $this->getColumnType($checkedColumn->data->Type);
-                                $this->buildAndRunQuery(queryType: "ALTER_CHANGE_COLUMN", from: $modification["to"], to: $modification["to"]."_ALTERED", type: $column->type, limit: $column->limit, extras: $checkedColumn->data->Extra);
+                                $this->buildAndRunQuery(queryType: "ALTER_CHANGE_COLUMN", from: $modification["to"], to: $modification["to"]."_ALTERED", type: $column->type, limit: $column->limit, fromType: $modification["from_type"], toType: $modification["to_type"], extras: $checkedColumn->data->Extra);
                                 DB::query($modification["sql"]);
                             } else {
+                                $this->clearColumn(from: $modification["from"], to: $modification["to"], fromType: $modification["from_type"], toType: $modification["to_type"]);
                                 DB::query($modification["sql"]);
                             }
                         } else {
+                            $this->clearColumn(from: $modification["from"], to: $modification["to"], fromType: $modification["from_type"], toType: $modification["to_type"]);
                             DB::query($modification["sql"]);
                         }
                     }
-                    
                 } else {
                     DB::query($modification["sql"]);
                 }
@@ -343,6 +367,8 @@ class Schema {
                 
                 if ($new_column?->type == "text") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
+                } else if ($new_column?->type == "double") {
+                    $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
                 } else if ($new_column?->type == "datetime") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` DATETIME NOT NULL DEFAULT ". $column["Default"]. "; ";
                 }
@@ -352,6 +378,8 @@ class Schema {
                         "sql"=>$mod_sql,
                         "from"=>$saved_column_to_alter["Field"],
                         "to"=>$column["Field"],
+                        "from_type"=>$saved_column_to_alter["Type"],
+                        "to_type"=>$column["Type"],
                         "operation_type"=>"ALTER_CHANGE_COLUMN"
                     ]
                 );
@@ -414,7 +442,7 @@ class Schema {
     public function getColumnType(string $field) {
         $field_arry = explode("(", $field);
 
-        if ($field != "text" && $field != "datetime") {
+        if ($field != "text" && $field != "datetime" && $field != "double") {
             return (object) ['type'=>$field_arry[0], 'limit'=> str_replace(")", "", $field_arry[1])];
         } else {
             return (object) ['type'=>$field, 'limit'=> 1];
@@ -460,6 +488,8 @@ class Schema {
                 
                 if ($new_column?->type == "text") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
+                } else if ($new_column?->type == "double") {
+                    $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
                 } else if ($new_column?->type == "datetime") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$saved_column_to_alter["Field"]."` `".$column["Field"]."` DATETIME NOT NULL DEFAULT ". $column["Default"]. "; ";
                 }
@@ -469,6 +499,8 @@ class Schema {
                         "sql"=>$mod_sql,
                         "from"=>$saved_column_to_alter["Field"],
                         "to"=>$column["Field"],
+                        "from_type"=>$saved_column_to_alter["Type"],
+                        "to_type"=>$column["Type"],
                         "operation_type"=>"ALTER_CHANGE_COLUMN"
                     ]
                 );
@@ -609,7 +641,26 @@ class Schema {
         $this->compareAndAlterExsitingColumns();
     }
 
-    public function buildAndRunQuery(string $queryType, string $from, string $to, string $type, string $limit, string $extras = "", string $key = "") {
+    public function clearColumn(string $from, string $to, string $fromType = "", string $toType = "") {
+        $raw_fromType = $this->getColumnType($fromType);
+        $raw_toType = $this->getColumnType($toType);
+        echo "to: $raw_toType->type from: $raw_fromType->type \n";
+        if ($raw_fromType->type != "" && $raw_toType->type != "" && $raw_fromType->type != $raw_toType->type) {
+            if (in_array(strtolower($raw_toType->type), ["int", "bigint", "double"]) && in_array(strtolower($raw_fromType->type), ["varchar", "text", "datetime"])) {
+                $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=0";
+                echo "$$update_sql\n";
+                DB::query($update_sql);
+            } else {
+                if (in_array(strtolower($raw_toType->type), ["datetime"])) {
+                    $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=now()";
+                    echo "$$update_sql\n";
+                    DB::query($update_sql);
+                }
+            }
+        }
+    }
+
+    public function buildAndRunQuery(string $queryType, string $from, string $to, string $type, string $limit, string $fromType = "", string $toType = "", string $extras = "", string $key = "") {
 
         $auto_increment_sub_query = "";
         $add_primary_key = "";
@@ -632,6 +683,12 @@ class Schema {
         } else {
 
         }
+
+        if ($queryType != "ALTER_CHANGE_COLUMN") {
+            $this->clearColumn(from: $from, to: $to, fromType: $fromType, toType: $toType);
+        }
+
+        // echo "$sql \n";
 
         DB::query($sql);
     }
