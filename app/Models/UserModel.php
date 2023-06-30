@@ -12,8 +12,8 @@ class UserModel extends BaseModel {
         $schema = new Schema(self::$tableName);
         $schema->id();
         $schema->string('username');
-        $schema->string('firstname');
         $schema->string('password');
+        $schema->string('firstname');
         $schema->string('email');
         $schema->string('lastname');
         $schema->create();

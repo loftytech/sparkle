@@ -244,7 +244,7 @@ class Schema {
 
     private function checkColumnExists ($column) {
         $query = "DESCRIBE ". $this->tableName;
-        $data = DB::query($query);
+        $data = DB::query($query, [], true);
 
         $colunm_data = "";
 
@@ -266,7 +266,7 @@ class Schema {
 
     public function describeTable() {
         $query = "DESCRIBE ". $this->tableName;
-        $data = DB::query($query);
+        $data = DB::query($query, [], true);
         $table_columns = count($data);
         if($this->useTimestamps) {
             if ($data[$table_columns-2] == "date_created" && $data[$table_columns-1] == "date_updated") {

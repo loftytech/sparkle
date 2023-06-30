@@ -80,7 +80,7 @@ class Route {
 		}
 
 		if ($req_url_len == $set_url_len && strtolower($req_url_str) == strtolower($set_url_str) && count($url_params) == count($set_params) && strtolower($_SERVER['REQUEST_METHOD']) == strtolower($type)) {
-			$request = new Request(params: $att_params, query: $_GET, body: array_merge(json_decode(file_get_contents('php://input')) ?? [], $_POST));
+			$request = new Request(params: $att_params, query: $_GET, body: array_merge(json_decode(file_get_contents('php://input'), true) ?? [], $_POST));
 			foreach($functions as $key => $function) {
 
 				if (is_callable($function)) {
