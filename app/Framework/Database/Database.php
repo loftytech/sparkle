@@ -24,7 +24,8 @@ class Database {
 		return self::$pdoInstance;
 	}
 
-	public static function query($query, $params = array()) {
+	public static function query($query, $params = array(), $returnArray = false) {
+		// echo $query . "\n\n";
 		$statement = self::connect()->prepare($query);
 		$statement->execute($params);
 
@@ -32,7 +33,7 @@ class Database {
 
 		if ($queryType == 'SELECT' || $queryType == 'DESCRIBE') {
 
-			$data = $statement->fetchAll(\PDO::FETCH_ASSOC);
+			$data = $statement->fetchAll($returnArray ==  false ? \PDO::FETCH_OBJ : \PDO::FETCH_ASSOC);
 			return $data;
 
 		}
@@ -47,7 +48,7 @@ class Database {
 		$query = "SELECT TABLE_SCHEMA,  TABLE_NAME, TABLE_TYPE FROM information_schema.TABLES WHERE TABLE_SCHEMA LIKE '".self::$dbName."' AND TABLE_TYPE LIKE 'BASE TABLE' AND TABLE_NAME = '".$table."'";
 		$statement = self::connect()->prepare($query);
 		$statement->execute($params);
-		$data = $statement->fetchAll(\PDO::FETCH_ASSOC);
+		$data = $statement->fetchAll(\PDO::FETCH_OBJ);
 		return $data;
 	}
 }

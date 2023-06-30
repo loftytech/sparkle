@@ -2,6 +2,7 @@
 namespace App\Framework\Model;
 
 use App\Framework\Database\Database as DB;
+use App\Framework\Utilities\BaseUtility;
 
 class BaseModel {
     protected static $tableName = "";
@@ -10,6 +11,7 @@ class BaseModel {
     private $query_params = "";
     private $query_limit = "";
     private $query_offset = "";
+    private $query_order_by = "";
 
     private $where_sub_query = "";
 
@@ -48,7 +50,7 @@ class BaseModel {
         $sql_query = "SELECT * FROM ".static::$tableName." ".$search .$query_limit;
         $data = DB::query($sql_query, $query_params);
 
-        return (object) $data;
+        return $data;
     }
 
     public static function findById(int | string $id, string $tableId = "id") {
@@ -56,13 +58,13 @@ class BaseModel {
         $data = DB::query($sql_query, [":row_id"=> (int) $id]);
 
         if (count($data) > 0) {
-            return (object) $data[0];
+            return $data[0];
         } else {
             return null;
         }
     }
 
-    public static function all() {
+    public function all() {
         $sql_query = "SELECT * FROM ".static::$tableName;
         $data = DB::query($sql_query, []);
 
@@ -175,6 +177,30 @@ class BaseModel {
         return $this;
     }
 
+    public function or(string $key, string $inputValue, $extra = "none") {
+        $query_params = [];
+        $search = "";
+
+        $value = "";
+        $operand = "=";
+
+        if ($extra == "none") {
+            $value = $inputValue;
+       } else {
+           $value = $extra;
+           $operand = $inputValue;
+       }
+    
+        $this->where_sub_query = $this->where_sub_query . " OR " .$key . $operand.":where_".$key;
+        $param = array(
+            ":where_".$key => $value
+        );
+        
+        $this->query_params = array_merge($this->query_params, $param);
+
+        return $this;
+    }
+
     protected static function getTableName() {
         return static::$tableName;
     }
@@ -202,7 +228,7 @@ class BaseModel {
 
         
         $this->query_params = array_merge($this->query_params, $query_params);
-        $sql_query = "UPDATE ". static::$tableName . " SET " . $search . $this->where_sub_query . $this->query_limit . $this->query_offset;
+        $sql_query = "UPDATE ". static::$tableName . " SET " . $search . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
 
         
         // print_r($this->query_params);
@@ -216,24 +242,61 @@ class BaseModel {
         return $data;
     }
 
-    public function get() {
-        $sql_query = "SELECT * FROM  ". static::$tableName . $this->where_sub_query . $this->query_limit . $this->query_offset;
+    public function get(string ...$columns) {
+        $slected_columns = "*";
+
+        if (count($columns) > 0) {
+           foreach ($columns as $key => $column) {
+                if ($key == 0) {
+                    $slected_columns = $column;
+                } else {
+                    $slected_columns =  $slected_columns . "," . $column;
+                }
+           }
+        }
+
+        $sql_query = "SELECT ".$slected_columns." FROM  ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
         $data = DB::query($sql_query, $this->query_params);
 
         if (count($data) > 0) {
-            return (object) $data;
+            return $data;
         } else {
-            return null;
+            return [];
         }
+    }
+    public function remove() {
         
+        $sql_query = "DELETE FROM  ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
+        $data = DB::query($sql_query, $this->query_params);
     }
 
-    public function first() {
-        $sql_query = "SELECT * FROM  ". static::$tableName . $this->where_sub_query . $this->query_limit . $this->query_offset;
+
+    public function count() {
+        $sql_query = "SELECT COUNT(id) FROM  ". static::$tableName;
+        $data = DB::query($sql_query);
+
+        return $data[0]['COUNT(id)'];
+    }
+
+    public function first(string ...$columns) {
+        $slected_columns = "*";
+
+        if (count($columns) > 0) {
+           foreach ($columns as $key => $column) {
+                if ($key == 0) {
+                    $slected_columns = $column;
+                } else {
+                    $slected_columns =  $slected_columns . "," . $column;
+                }
+           }
+        }
+
+        $sql_query = "SELECT ".$slected_columns." FROM  ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
+        
         $data = DB::query($sql_query, $this->query_params);
 
         if (count($data) > 0) {
-            return (object) $data[0];
+            return $data[0];
         } else {
             return null;
         }
@@ -254,6 +317,13 @@ class BaseModel {
          } else {
             $this->query_offset = "";
          }
+        return $this;
+    }
+
+    public function order(string $column = "id", string $order = "DESC") {
+      
+        $this->query_order_by = " ORDER BY " . $column . " " .$order . " ";
+
         return $this;
     }
 
@@ -359,6 +429,21 @@ class BaseModel {
         // }
 
         return $data;
+    }
+
+    public function resolveTableName() {
+        if (static::$tableName != "") {
+            return static::$tableName;
+        } else {
+            $fullClassArr = explode("\\", get_class($this));
+            $class_name = end($fullClassArr);
+            $last_class_letter = $class_name[strlen($class_name)-1];
+            $plural_letter = "s";
+            if ($last_class_letter == "s" || $last_class_letter == "x" || $last_class_letter == "z") {
+                $plural_letter = "es";
+            }
+            return BaseUtility::toCamelCase($class_name) .  $plural_letter;
+        }
     }
 }
 

@@ -18,7 +18,7 @@
             App\Framework\Helpers\EnvGenerator::load();
             include "app/Framework/Migrations/Migrator.php";
         }
-        if ($argv[1] == "config") {
+        if ($argv[1] == "configure") {
             require_once __DIR__ . "/app/Framework/Helpers/EnvGenerator.php";
             App\Framework\Helpers\EnvGenerator::generate();
             
