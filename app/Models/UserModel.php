@@ -16,7 +16,6 @@ class UserModel extends BaseModel {
         $schema->string('lastname');
         $schema->string('password');
         $schema->string('email');
-        $schema->double('sweet');
         $schema->create();
     }
 }
