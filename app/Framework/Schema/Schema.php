@@ -2,6 +2,7 @@
 namespace App\Framework\Schema;
 
 use App\Framework\Database\Database as DB;
+use App\Framework\Utilities\Log;
 
 class Schema {
     protected $tableName;
@@ -212,6 +213,7 @@ class Schema {
             }
             $this->compareColumns();
             foreach ($this->columnDropList as $column_drop_query) {
+                // Log::warning($column_drop_query["sql"]);
                 DB::query($column_drop_query["sql"]);
             }
             foreach ($this->modificationList as $modification) {
@@ -235,20 +237,29 @@ class Schema {
                             if ($modification["from"] != $modification["to"]) {
                                 array_push($this->replacedColumnList, $modification["to"]);
                                 $column = $this->getColumnType($checkedColumn->data->Type);
+
                                 $this->buildAndRunQuery(queryType: "ALTER_CHANGE_COLUMN", from: $modification["to"], to: $modification["to"]."_ALTERED", type: $column->type, limit: $column->limit, fromType: $modification["from_type"], toType: $modification["to_type"], extras: $checkedColumn->data->Extra);
+                                $this->clearColumn(from: $modification["from"], to: $modification["to"], fromType: $modification["from_type"], toType: $modification["to_type"]);
+                                // Log::neutral($modification["sql"]);
                                 DB::query($modification["sql"]);
                             } else {
                                 $this->clearColumn(from: $modification["from"], to: $modification["to"], fromType: $modification["from_type"], toType: $modification["to_type"]);
+                                // Log::neutral($modification["sql"]);
                                 DB::query($modification["sql"]);
                             }
                         } else {
                             $this->clearColumn(from: $modification["from"], to: $modification["to"], fromType: $modification["from_type"], toType: $modification["to_type"]);
+                            // Log::neutral($modification["sql"]);
                             DB::query($modification["sql"]);
                         }
                     }
+
+                    // Log::neutral($modification["sql"]);
                 } else {
+                    // Log::neutral($modification["sql"]);
                     DB::query($modification["sql"]);
                 }
+
             }
 
             if (!$this->skippedMigration) {
@@ -293,28 +304,33 @@ class Schema {
         $data = DB::query($query, [], true);
         $table_columns = count($data);
         if($this->useTimestamps) {
-            if ($data[$table_columns-2] == "date_created" && $data[$table_columns-1] == "date_updated") {
+            if ($data[$table_columns-2]["Field"] == "date_created" && $data[$table_columns-1]["Field"] == "date_updated") {
                 unset($data[$table_columns-1]);
                 unset($data[$table_columns-2]);
             }
         }
+        // Log::success("====== saved columns ======");
+        // Log::neutral(print_r($data));
         $this->savedColumnList = array_values($data);
+
     }
-    // public function removeTimestampsFromNewColumns () {
-    //     $query = "DESCRIBE ". $this->tableName;
-    //     $data = DB::query($query);
-    //     $table_columns = count($data);
-    //     if($this->useTimestamps) {
-    //         if ($this->newColumnList[$table_columns-2] == "date_created" && $this->newColumnList[$table_columns-1] == "date_updated") {
-    //             unset($this->newColumnList[$table_columns-1]);
-    //             unset($this->newColumnList[$table_columns-2]);
-    //         }
-    //     }
-    //     $this->newColumnList = array_values($data);
-    // }
+    public function removeTimestampsFromNewColumns () {
+        $query = "DESCRIBE ". $this->tableName;
+        $data = $this->newColumnList;
+        $table_columns = count($data);
+        if($this->useTimestamps) {
+            if ($data[$table_columns-2]["Field"] == "date_created" && $data[$table_columns-1]["Field"] == "date_updated") {
+                unset($data[$table_columns-1]);
+                unset($data[$table_columns-2]);
+            }
+        }
+        // Log::success("====== new columns ======");
+        // Log::neutral(print_r($data));
+        $this->newColumnList = array_values($data);
+    }
 
     public function compareColumns() {
-        // $this->removeTimestampsFromNewColumns();
+        $this->removeTimestampsFromNewColumns();
         if (count($this->newColumnList) == count($this->savedColumnList)) {
             $this->compareAndAlterColumns();
         } else {
@@ -573,6 +589,8 @@ class Schema {
                 
                 if ($new_column?->type == "text") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` ADD `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$alter_after_sub_query." ". $add_primary_key."; ";
+                } else if ($new_column?->type == "double") {
+                    $mod_sql = "ALTER TABLE `".$this->tableName."` ADD `".$column["Field"]."` ".$new_column?->type." NOT NULL ".$auto_increment_sub_query." ".$alter_after_sub_query." ". $add_primary_key."; ";
                 } else if ($new_column?->type == "datetime") {
                     $mod_sql = "ALTER TABLE `".$this->tableName."` ADD `".$column["Field"]."` ".$new_column?->type." NOT NULL DEFAULT CURRENT_TIMESTAMP ".$alter_after_sub_query.";";
                 }
@@ -600,8 +618,10 @@ class Schema {
     }
 
     public function filterColumnsToDrop() {
+        // Log::error("Checking for columns to drop");
         $new_table_length = count($this->newColumnList);
         if ($new_table_length < count($this->savedColumnList)) {
+            Log::warning("Some columns would be dropped");
             $colums_to_be_dropped = $this->savedColumnList;
             $filtered_column_list = [];
 
@@ -613,8 +633,11 @@ class Schema {
                 */
 
                 if ($savedColumnKey <  $new_table_length) {
+                    // Log::success($savedColumn["Field"] ." will not be droped");
                     array_push($filtered_column_list, $savedColumn);
                     unset($colums_to_be_dropped[$savedColumnKey]);
+                } else {
+                    // Log::error($savedColumn["Field"] ." will be droped");
                 }
             }
 
@@ -629,8 +652,14 @@ class Schema {
 
             $this->savedColumnList = $filtered_column_list;
 
-            // echo print_r($this->columnDropList);
+        } else {
+            // Log::error("Can not perform dropping operation");
         }
+
+
+        // Log::error("Found columns ".count($this->columnDropList)." to drop");
+
+        // echo print_r($this->columnDropList);
     }
 
     public function getPreviousColumn($arr, $key) {
@@ -644,16 +673,18 @@ class Schema {
     public function clearColumn(string $from, string $to, string $fromType = "", string $toType = "") {
         $raw_fromType = $this->getColumnType($fromType);
         $raw_toType = $this->getColumnType($toType);
-        echo "to: $raw_toType->type from: $raw_fromType->type \n";
+        // echo "to: $to ($raw_toType->type) from: $from ($raw_fromType->type) \n";
         if ($raw_fromType->type != "" && $raw_toType->type != "" && $raw_fromType->type != $raw_toType->type) {
             if (in_array(strtolower($raw_toType->type), ["int", "bigint", "double"]) && in_array(strtolower($raw_fromType->type), ["varchar", "text", "datetime"])) {
                 $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=0";
-                echo "$$update_sql\n";
+                // echo "$$update_sql\n";
+                // Log::warning($update_sql);
                 DB::query($update_sql);
             } else {
                 if (in_array(strtolower($raw_toType->type), ["datetime"])) {
-                    $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=now()";
-                    echo "$$update_sql\n";
+                    $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=0";
+                    // echo "$$update_sql\n";
+                    // Log::warning($update_sql);
                     DB::query($update_sql);
                 }
             }
@@ -677,18 +708,17 @@ class Schema {
         if ($queryType == "ALTER_CHANGE_COLUMN") {
             $sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$from."` `".$to."` ".$type."(".$limit.") NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
 
-            if ($type == "text") {
+            if (in_array($type, ["text", "datetime", "double"])) {
                 $sql = "ALTER TABLE `".$this->tableName."` CHANGE `".$from."` `".$to."` ".$type." NOT NULL ".$auto_increment_sub_query." ".$add_primary_key."; ";
             }
         } else {
 
         }
 
-        if ($queryType != "ALTER_CHANGE_COLUMN") {
-            $this->clearColumn(from: $from, to: $to, fromType: $fromType, toType: $toType);
-        }
+        // $this->clearColumn(from: $from, to: $to, fromType: $fromType, toType: $toType);
 
         // echo "$sql \n";
+        // Log::neutral($sql);
 
         DB::query($sql);
     }
