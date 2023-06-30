@@ -11,6 +11,10 @@ class BaseUtility {
         }
         return $randomString;
     }
+
+    public static function toCamelCase($input) {
+        return ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $input)), '_');
+    }
 }
 
 ?>

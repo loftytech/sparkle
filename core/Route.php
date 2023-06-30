@@ -23,7 +23,8 @@ class Route {
 		/*
 		 *	Convert requested url and set endpoints to arrays and get their length
 		 */
-		$req_url_arr = explode('/', substr($raw_req_url, 1));
+		$req_url_with_query = explode('?', $raw_req_url);
+		$req_url_arr = explode('/', substr($req_url_with_query[0], 1));
 		$req_url_len = count($req_url_arr);
 
 		$set_url_arr = explode('/', substr($raw_set_url, 1));
@@ -79,7 +80,7 @@ class Route {
 		}
 
 		if ($req_url_len == $set_url_len && strtolower($req_url_str) == strtolower($set_url_str) && count($url_params) == count($set_params) && strtolower($_SERVER['REQUEST_METHOD']) == strtolower($type)) {
-			$request = new Request(params: $att_params, query: $_GET, body: file_get_contents('php://input'));
+			$request = new Request(params: $att_params, query: $_GET, body: array_merge(json_decode(file_get_contents('php://input'), true) ?? [], $_POST));
 			foreach($functions as $key => $function) {
 
 				if (is_callable($function)) {
