@@ -123,6 +123,29 @@ class Schema {
     }
 
 
+
+    public function datetime(string $column, int $length = 11) {
+        $this->checkTableExists($column);
+        $this->current_column_index = $this->current_column_index + 1;
+        array_push($this->newColumnList, [
+            "Field" => $column,
+            "Type" => "datetime",
+            "Null" => "NO",
+            "Key" => "",
+            "Default" => "current_timestamp()",
+            "Extra" => "",
+        ]);
+        $this->current_column = $column;
+        $append_comma = "";
+        if (strlen($this->schema_sql) > 1) {
+            $append_comma = ",";
+        }
+    
+        $this->schema_sql = $this->schema_sql . $append_comma ." `". $column ."` datetime NOT NULL";
+        return $this;
+    }
+
+
     public function id(string $column = 'id', int $length = 11) {
         $this->checkTableExists($column);
         $this->current_column_index = $this->current_column_index + 1;
@@ -458,7 +481,7 @@ class Schema {
     public function getColumnType(string $field) {
         $field_arry = explode("(", $field);
 
-        if ($field != "text" && $field != "datetime" && $field != "double") {
+        if (str_contains($field, "(")) {
             return (object) ['type'=>$field_arry[0], 'limit'=> str_replace(")", "", $field_arry[1])];
         } else {
             return (object) ['type'=>$field, 'limit'=> 1];
@@ -682,7 +705,7 @@ class Schema {
                 DB::query($update_sql);
             } else {
                 if (in_array(strtolower($raw_toType->type), ["datetime"])) {
-                    $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=0";
+                    $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=now()";
                     // echo "$$update_sql\n";
                     // Log::warning($update_sql);
                     DB::query($update_sql);
