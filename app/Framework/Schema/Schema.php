@@ -705,7 +705,7 @@ class Schema {
                 DB::query($update_sql);
             } else {
                 if (in_array(strtolower($raw_toType->type), ["datetime"])) {
-                    $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`=now()";
+                    $update_sql = "UPDATE `".$this->tableName."` SET `".$from."`='0000-00-00 00:00:00'";
                     // echo "$$update_sql\n";
                     // Log::warning($update_sql);
                     DB::query($update_sql);
