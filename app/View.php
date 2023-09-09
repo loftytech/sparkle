@@ -2,7 +2,11 @@
 
 namespace App;
 
+use App\CssGenerator;
+
 class View {
+    private string $current_css = "";
+    private string $compiled_css = "";
 
     public static function renderView(string $viewName, array $data = []) {
         $data = (object) $data;
@@ -22,6 +26,20 @@ class View {
         return ob_get_clean();
     }
 
+    public static function getFileContent(string $fileName, array $data = []) {
+        $data = (object) $data;
+
+        $viewName = str_replace('../', '', $fileName);
+		
+		$viewPath = __DIR__ . "/../views/".$viewName."";
+
+        if (!file_exists($viewPath)) {
+            die("The file {$viewPath} could not be found.");
+        }
+
+        return file_get_contents($viewPath);
+    }
+
 
     public static function make(string $viewName, array $data = []) {
         $viewName = str_replace('../', '', $viewName);
@@ -33,7 +51,24 @@ class View {
             return $data[$text] ?? "";
         }, $viewContent);
 
+
+
+        $processedContent = preg_replace_callback("/(\{{style:)(.*)(\}})/", function ($matches) {      
+            $css_file = str_replace('../', '', trim($matches[2]));
+            $style_contents = self::getFileContent($css_file);
+
+            $instance = new self;
+            $css_styles = $instance->buildStyles($style_contents);
+
+            return "<style>$css_styles</style>";
+        }, $processedContent);
+
         echo $processedContent;
+    }
+
+    public function buildStyles(string $content) {
+        $css_generator = new CssGenerator($content);
+        return $css_generator->compiled_css;
     }
 
     private static $html_string = "";
