@@ -113,11 +113,11 @@ class CssGenerator {
 
     public function generateCss() {
         foreach ($this->compiled_array as $key => $value) {
-            $this->compiled_css = $this->compiled_css . $key .  " {<br />";
+            $this->compiled_css = $this->compiled_css . $key . " {";
             foreach ($value as $property => $style) {
-                $this->compiled_css = $this->compiled_css ."&nbsp;&nbsp;&nbsp;&nbsp;" . $style. " <br />";
+                $this->compiled_css = $this->compiled_css . $style;
             }
-            $this->compiled_css = $this->compiled_css .  "}<br />";
+            $this->compiled_css = $this->compiled_css .  "}";
         }
     }
 
