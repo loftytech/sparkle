@@ -20,6 +20,17 @@ class Controller {
 		];
 		View::make($viewName, $data);
 	}
+
+
+
+	public static function testCreateView($viewName, $params = null) {
+		$params = (object) $params;
+
+		$data = [
+			'site_title'=>env('APP_NAME'),
+		];
+		View::makeTest($viewName, $data);
+	}
 }
 
 ?>

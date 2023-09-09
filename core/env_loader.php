@@ -13,4 +13,9 @@ function env(string $key) {
     }
 }
 
+function yieldStyles(string $path) {
+    $texts = file_get_contents($path);
+    echo $texts;
+}
+
 ?>

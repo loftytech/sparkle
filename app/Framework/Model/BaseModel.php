@@ -15,11 +15,6 @@ class BaseModel {
 
     private $where_sub_query = "";
 
-    public function __construct (string $sql_query = "", array $query_params = []) {
-        $this->db_query = $sql_query;
-        $this->query_params = $query_params;
-    }
-
     public static function find(array $queries = [], int $limit = 0) {
         $query_params = [];
         $search = "";
@@ -264,10 +259,15 @@ class BaseModel {
             return [];
         }
     }
-    public function remove() {
-        
+
+    public function delete() : void {
+        $sql_query = "DELETE FROM ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
+        DB::query($sql_query, $this->query_params);
+    }
+
+    public function remove() : void{
         $sql_query = "DELETE FROM  ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
-        $data = DB::query($sql_query, $this->query_params);
+        DB::query($sql_query, $this->query_params);
     }
 
 
