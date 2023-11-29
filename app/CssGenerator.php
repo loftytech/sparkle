@@ -97,20 +97,26 @@ class CssGenerator {
                             }
                         } else {
     
-    
-    
                             $trim_key = trim($key);
                             $trim_child_key = trim($child_key);
                             $trim_parent_selector = trim($parent_selector);
     
                             $full_selector = $trim_parent_selector . " " . $trim_key . " " . $trim_child_key;
     
-    
-                            if ($parent_selector == "") {
-                                $full_selector =  $trim_key . " " . $trim_child_key;
+                            // if ($parent_selector == "") {
+                            //     $full_selector =  $trim_key . " " . $trim_child_key;
+                            // }
+
+                            $full_child_key = "";
+
+                            $child_key_arr = explode(",", $trim_child_key);
+
+                            foreach ($child_key_arr as $arr_key => $child_key_value) {
+                                $trimed_value = trim($child_key_value);
+                                $full_child_key = $full_child_key . ($arr_key > 0 ? ", " : "") . $trim_parent_selector . ($trim_key[0] == ":" ? $trim_key : " " . $trim_key) . ($trimed_value[0] == ":" ? $trimed_value : " " . $trimed_value);
                             }
     
-                            $full_selector = $trim_parent_selector . ($trim_key[0] == ":" ? $trim_key : " " . $trim_key) . ($trim_child_key[0] == ":" ? $trim_child_key : " " . $trim_child_key);
+                            $full_selector = $full_child_key;
                             
     
                             if ($trim_child_key[0] == "@") {
@@ -185,13 +191,21 @@ class CssGenerator {
 
                         $full_selector = $trim_parent_selector . " " . $trim_key . " " . $trim_child_key;
 
+                        // if ($parent_selector == "") {
+                        //     $full_selector =  $trim_key . " " . $trim_child_key;
+                        // }
 
-                        if ($parent_selector == "") {
-                            $full_selector =  $trim_key . " " . $trim_child_key;
+                        $full_child_key = "";
+
+                        $child_key_arr = explode(",", $trim_child_key);
+
+                        foreach ($child_key_arr as $arr_key => $child_key_value) {
+                            $trimed_value = trim($child_key_value);
+                            $full_child_key = $full_child_key . ($arr_key > 0 ? ", " : "") . $trim_parent_selector . ($trim_key[0] == ":" ? $trim_key : " " . $trim_key) . ($trimed_value[0] == ":" ? $trimed_value : " " . $trimed_value);
                         }
 
-                        $full_selector = $trim_parent_selector . ($trim_key[0] == ":" ? $trim_key : " " . $trim_key) . ($trim_child_key[0] == ":" ? $trim_child_key : " " . $trim_child_key);
-
+                        $full_selector = $full_child_key;
+                        
                         $this->resolveCss($value->$child_key, $full_selector);
                     }
                 }
