@@ -8,12 +8,13 @@ class BaseModel {
     protected static $tableName = "";
 
     private $db_query = "";
-    private $query_params = "";
+    private $query_params = [];
     private $query_limit = "";
     private $query_offset = "";
     private $query_order_by = "";
 
     private $where_sub_query = "";
+    private $update_search = "";
 
     public static function find(array $queries = [], int $limit = 0) {
         $query_params = [];
@@ -162,7 +163,65 @@ class BaseModel {
            $operand = $inputValue;
        }
     
-        $this->where_sub_query = $this->where_sub_query . " AND " .$key . $operand.":where_".$key;
+        $this->where_sub_query = $this->where_sub_query . " AND " .$key . $operand.":where_and_".$key;
+        $param = array(
+            ":where_and_".$key => $value
+        );
+        
+        $this->query_params = array_merge($this->query_params, $param);
+
+        return $this;
+    }
+
+    public function increment(string $key, string $inputValue, $extra = "none") {
+        $query_params = [];
+        $search = "";
+
+        $value = "";
+        $operand = "=";
+
+        if ($extra == "none") {
+            $value = $inputValue;
+       } else {
+           $value = $extra;
+           $operand = $inputValue;
+       }
+    
+       if (strlen($this->update_search) > 0) {
+            $this->update_search = $this->update_search . ", " . $key . $operand."$key + :where_".$key;
+        } else {
+            $this->update_search = $this->update_search . $key . $operand."$key + :where_".$key;
+        }
+
+        $param = array(
+            ":where_".$key => $value
+        );
+        
+        $this->query_params = array_merge($this->query_params, $param);
+
+        return $this;
+    }
+
+    public function decrement(string $key, string $inputValue, $extra = "none") {
+        $query_params = [];
+        $search = "";
+
+        $value = "";
+        $operand = "=";
+
+        if ($extra == "none") {
+            $value = $inputValue;
+       } else {
+           $value = $extra;
+           $operand = $inputValue;
+       }
+    
+        if (strlen($this->update_search) > 0) {
+            $this->update_search = $this->update_search . ", " . $key . $operand."$key - :where_".$key;
+        } else {
+            $this->update_search = $this->update_search . $key . $operand."$key - :where_".$key;
+        }
+
         $param = array(
             ":where_".$key => $value
         );
@@ -186,9 +245,9 @@ class BaseModel {
            $operand = $inputValue;
        }
     
-        $this->where_sub_query = $this->where_sub_query . " OR " .$key . $operand.":where_".$key;
+        $this->where_sub_query = $this->where_sub_query . " OR " .$key . $operand.":where_or_".$key;
         $param = array(
-            ":where_".$key => $value
+            ":where_or_".$key => $value
         );
         
         $this->query_params = array_merge($this->query_params, $param);
@@ -221,9 +280,12 @@ class BaseModel {
 
         $search = $search . ", date_updated=now()";
 
+        $this->update_search = $this->update_search . $search;
+
         
         $this->query_params = array_merge($this->query_params, $query_params);
-        $sql_query = "UPDATE ". static::$tableName . " SET " . $search . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
+    
+        $sql_query = "UPDATE ". static::$tableName . " SET " . $this->update_search . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
 
         
         // print_r($this->query_params);
@@ -251,6 +313,7 @@ class BaseModel {
         }
 
         $sql_query = "SELECT ".$slected_columns." FROM  ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
+
         $data = DB::query($sql_query, $this->query_params);
 
         if (count($data) > 0) {

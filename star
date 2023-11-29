@@ -11,7 +11,7 @@
             require_once __DIR__ . "/app/Framework/Helpers/EnvGenerator.php";
             App\Framework\Helpers\EnvGenerator::generate();
 
-            shell_exec("php -S localhost:8000 -t public/");
+            shell_exec("php -S localhost:".env("APP_PORT", 8000)." -t public/");
         }
         if ($argv[1] == "migrate") {
             require_once __DIR__ . "/app/Framework/Helpers/EnvGenerator.php";
