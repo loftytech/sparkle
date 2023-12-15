@@ -334,11 +334,12 @@ class BaseModel {
     }
 
 
-    public function count() {
-        $sql_query = "SELECT COUNT(id) FROM  ". static::$tableName;
-        $data = DB::query($sql_query);
+    public function count($row_id = "id") {
+        $sql_query = "SELECT COUNT($row_id) FROM ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
 
-        return $data[0]['COUNT(id)'];
+        $data = DB::query($sql_query, $this->query_params);
+
+        return $data[0]->{'COUNT('.$row_id.')'};
     }
 
     public function first(string ...$columns) {
