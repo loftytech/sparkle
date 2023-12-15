@@ -25,10 +25,12 @@ class CssGenerator {
     }
 
     private function scssToNestedArray($scss) {
+        $processedContent = str_replace('"',  "'", $scss);
+    
         // convert selectors to objects
         $processedContent = preg_replace_callback("/(.*)(\{)/", function ($matches) {
             return '"'.trim($matches[1]).'":'.'{';
-        }, $scss);
+        }, $processedContent);
 
         // convert css properties to keys
         $processedContent = preg_replace_callback("/(.*)(:)(|\s+)(.*)(|\s+)(;)/", function ($matches) {
