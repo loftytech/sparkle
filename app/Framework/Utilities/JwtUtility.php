@@ -2,17 +2,16 @@
 namespace App\Framework\Utilities;
 
 class JwtUtility {
-    private static $secret = "36bybdfs5238nf84498";
 
     private static function base64url_encode($str) {
         return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
     }
 
-    private static function generate_jwt($headers, $payload) {
+    private static function generate_jwt($headers, $payload, $salt) {
         $headers_encoded = self::base64url_encode(json_encode($headers));
         $payload_encoded = self::base64url_encode(json_encode($payload));
         
-        $signature = hash_hmac('SHA256', "$headers_encoded.$payload_encoded", self::$secret, true);
+        $signature = hash_hmac('SHA256', "$headers_encoded.$payload_encoded", $salt, true);
         $signature_encoded = self::base64url_encode($signature);
         
         $jwt = "$headers_encoded.$payload_encoded.$signature_encoded";
@@ -20,11 +19,11 @@ class JwtUtility {
         return $jwt;
     }
 
-    public static function get_token($user_data) {
+    public static function get_token($user_data, $salt = null) {
         $headers = array('alg'=>'HS256','typ'=>'JWT');
         $payload = $user_data;
 
-        $jwt = self::generate_jwt($headers, $payload);
+        $jwt = self::generate_jwt($headers, $payload, $salt ?? env("SERVER_SALT"));
 
         return $jwt;
     }
@@ -46,7 +45,7 @@ class JwtUtility {
                 // build a signature based on the header and payload using the secret
                 $base64_url_header = self::base64url_encode($header);
                 $base64_url_payload = self::base64url_encode($payload);
-                $signature = hash_hmac('SHA256', $base64_url_header . "." . $base64_url_payload, self::$secret, true);
+                $signature = hash_hmac('SHA256', $base64_url_header . "." . $base64_url_payload, env("SERVER_SALT"), true);
                 $base64_url_signature = self::base64url_encode($signature);
             
                 // verify it matches the signature provided in the jwt
