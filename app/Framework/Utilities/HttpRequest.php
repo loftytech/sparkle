@@ -26,7 +26,7 @@ class HttpRequest {
           if ($iteration == 0) {
             $rsolvedQuery = "?$key=$value";
           } else {
-            $rsolvedQuery = $rsolvedQuery + "&$key=$value";
+            $rsolvedQuery = $rsolvedQuery . "&$key=$value";
           }
           $iteration = $iteration + 1;
         }
