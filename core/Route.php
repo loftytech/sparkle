@@ -9,7 +9,7 @@ class Route {
 		/*
 		 *	Get requested url / endpoint ending '/' if present
 		 */
-		$raw_req_url = str_replace("/mypaywave", "", explode('?', $_SERVER['REQUEST_URI'])[0]);
+		$raw_req_url = explode('?', $_SERVER['REQUEST_URI'])[0];
 		(substr($raw_req_url, -1) == '/') && $raw_req_url = substr($raw_req_url, 0, -1);
 		
 		
@@ -80,7 +80,8 @@ class Route {
 		}
 
 		if ($req_url_len == $set_url_len && strtolower($req_url_str) == strtolower($set_url_str) && count($url_params) == count($set_params) && strtolower($_SERVER['REQUEST_METHOD']) == strtolower($type)) {
-			$request = new Request(params: $att_params, query: $_GET, body: array_merge(json_decode(file_get_contents('php://input'), true) ?? [], $_POST));
+			$request = new Request(method: $_SERVER['REQUEST_METHOD'], path: $raw_req_url, params: $att_params, query: $_GET, body: array_merge(json_decode(file_get_contents('php://input'), true) ?? [], $_POST), headers: apache_request_headers() ?? []);
+
 			foreach($functions as $key => $function) {
 
 				if (is_callable($function)) {

@@ -8,6 +8,7 @@ class BaseModel {
     protected static $tableName = "";
 
     private $db_query = "";
+    private $param_count = 0;
     private $query_params = [];
     private $query_limit = "";
     private $query_offset = "";
@@ -123,6 +124,7 @@ class BaseModel {
 
     public function where(string $key, string $inputValue, $extra = "none"): self {
         $model = new $this;
+        $model->param_count = $model->param_count + 1;
         $query_params = [];
         $search = "";
 
@@ -150,6 +152,7 @@ class BaseModel {
 
 
     public function and(string $key, string $inputValue, $extra = "none") {
+        $this->param_count++;
         $query_params = [];
         $search = "";
 
@@ -163,9 +166,34 @@ class BaseModel {
            $operand = $inputValue;
        }
     
-        $this->where_sub_query = $this->where_sub_query . " AND " .$key . $operand.":where_and_".$key;
+        $this->where_sub_query = $this->where_sub_query . " AND " .$key . $operand.":where_and_" . $this->param_count . "_" . $key;
         $param = array(
-            ":where_and_".$key => $value
+            ":where_and_" . $this->param_count . "_" . $key => $value
+        );
+        
+        $this->query_params = array_merge($this->query_params, $param);
+
+        return $this;
+    }
+
+    public function andNot(string $key, string $inputValue, $extra = "none") {
+        $this->param_count++;
+        $query_params = [];
+        $search = "";
+
+        $value = "";
+        $operand = "<>";
+
+        if ($extra == "none") {
+            $value = $inputValue;
+       } else {
+           $value = $extra;
+           $operand = $inputValue;
+       }
+    
+        $this->where_sub_query = $this->where_sub_query . " AND " .$key . $operand.":where_andNot_" . $this->param_count . "_" . $key;
+        $param = array(
+            ":where_andNot_" . $this->param_count . "_" . $key => $value
         );
         
         $this->query_params = array_merge($this->query_params, $param);
@@ -232,6 +260,7 @@ class BaseModel {
     }
 
     public function or(string $key, string $inputValue, $extra = "none") {
+        $this->param_count++;
         $query_params = [];
         $search = "";
 
@@ -245,9 +274,9 @@ class BaseModel {
            $operand = $inputValue;
        }
     
-        $this->where_sub_query = $this->where_sub_query . " OR " .$key . $operand.":where_or_".$key;
+        $this->where_sub_query = $this->where_sub_query . " OR " .$key . $operand.":where_or_" . $this->param_count . "_" . $key;
         $param = array(
-            ":where_or_".$key => $value
+            ":where_or_" . $this->param_count . "_" . $key => $value
         );
         
         $this->query_params = array_merge($this->query_params, $param);
@@ -334,11 +363,12 @@ class BaseModel {
     }
 
 
-    public function count() {
-        $sql_query = "SELECT COUNT(id) FROM  ". static::$tableName;
-        $data = DB::query($sql_query);
+    public function count($row_id = "id") {
+        $sql_query = "SELECT COUNT($row_id) FROM ". static::$tableName . $this->where_sub_query . $this->query_order_by . $this->query_limit . $this->query_offset;
 
-        return $data[0]['COUNT(id)'];
+        $data = DB::query($sql_query, $this->query_params);
+
+        return $data[0]->{'COUNT('.$row_id.')'};
     }
 
     public function first(string ...$columns) {

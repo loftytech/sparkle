@@ -2,3 +2,5 @@
 /core/Environment.php
 .env
 .DS_Store
+/storage/private/*
+/storage/public/*
