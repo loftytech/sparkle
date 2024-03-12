@@ -14,6 +14,6 @@
             "email": "58659264+loftytech@users.noreply.github.com"
         }
     ],
-    "minimum-stability": "beta",
+    "minimum-stability": "stable",
     "require": {}
 }
