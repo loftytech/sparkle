@@ -1,5 +1,8 @@
 {
-    "name": "dcoder/howfar",
+    "name": "sparkle/sparkle",
+    "description": "Sparkle is a free to use open source php MVC framework for building web applications. It's very simple to work with and has a very low learning curve.",
+    "type": "project",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "App\\": "app/"
@@ -10,5 +13,7 @@
             "name": "loftytech",
             "email": "58659264+loftytech@users.noreply.github.com"
         }
-    ]
+    ],
+    "minimum-stability": "stable",
+    "require": {}
 }
