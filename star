@@ -6,10 +6,6 @@
     require_once "core/env_loader.php";
 
     if (isset($argc)) {
-        // for ($i = 1; $i < $args; $i++) {
-        //     echo "Argument #" . $i . " - " . $args[$i] . "\n";
-        // }
-
         if ($argv[1] == "light") {
             EnvGenerator::generate();
             shell_exec("php -S localhost:".env("APP_PORT", 8000)." -t public/");
