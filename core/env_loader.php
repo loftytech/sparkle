@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../app/Framework/Helpers/EnvGenerator.php";
-function env(string $key) {
+function env(string $key, string $default = null) {
     $envData = App\Framework\Helpers\EnvGenerator::initEnv();
 
     if (getenv($key)) {
@@ -9,7 +9,7 @@ function env(string $key) {
     } else if (isset($envData[$key])) {
         return $envData[$key];
     } else {
-        return null;
+        return $default;
     }
 }
 
