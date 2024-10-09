@@ -6,6 +6,7 @@ use Exception;
 class HttpRequest {
     public $request_url;
     public $headers;
+    public $basic_auth;
 
     public static function withHeaders(array $headers) : self {
         $httpRequest =  new HttpRequest();
@@ -19,35 +20,62 @@ class HttpRequest {
         }, array_values($this->headers), array_keys($this->headers));
     }
 
+    public function withBasicAuth(array $basic_auth) : self {
+        $this->basic_auth = (object) $basic_auth;
+        return $this;
+    }
+
     private function resolveQueryParams(array $params) {
         $iteration = 0;
         $rsolvedQuery = "";
         forEach ($params as $key => $value) {
           if ($iteration == 0) {
-            $rsolvedQuery = "?$key=$value";
+            $key_encoded = urlencode($key);
+            $value_encoded = urlencode($value);
+            $rsolvedQuery = "?$key_encoded=$value_encoded";
           } else {
-            $rsolvedQuery = $rsolvedQuery . "&$key=$value";
+            $key_encoded = urlencode($key);
+            $value_encoded = urlencode($value);
+            $rsolvedQuery = $rsolvedQuery . "&$key_encoded=$value_encoded";
           }
           $iteration = $iteration + 1;
         }
-    
+
         return $rsolvedQuery;
       }
 
 
     public function resolveRequest($type = "GET", array $data = [], $query = []) {
         $query = $this->resolveQueryParams($query);
-        $init_request = curl_init($this->request_url . $query);
+
+
+        $use_url_post_fields = false;
+
+        $headers = (object) $this->headers;
+
+        if (isset($headers?->{'Content-Type'}) && $headers?->{'Content-Type'} == "application/x-www-form-urlencoded") {
+            $query = substr($query, 1);
+            $use_url_post_fields = true;
+        }
+
+
+        $init_request = curl_init( !$use_url_post_fields ? $this->request_url .$query : $this->request_url);
 
         if ($type != "GET") {
             $payload = json_encode($data);
-            curl_setopt( $init_request, CURLOPT_POSTFIELDS, $payload);
+
+        // Response::send(["choke" => $use_url_post_fields ? $query : $payload]);
+            curl_setopt( $init_request, CURLOPT_POSTFIELDS, $use_url_post_fields ? $query : $payload);
         }
 
         curl_setopt($init_request, CURLOPT_CUSTOMREQUEST, $type);
 
         if ($this->headers) {
             curl_setopt( $init_request, CURLOPT_HTTPHEADER, $this->getHeaders());
+        }
+
+        if ($this->basic_auth) {
+            curl_setopt( $init_request, CURLOPT_USERPWD, $this->basic_auth?->username . ":" . $this->basic_auth?->password);
         }
 
         curl_setopt( $init_request, CURLOPT_RETURNTRANSFER, true );
